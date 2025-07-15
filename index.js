@@ -2,6 +2,7 @@ require('dotenv').config();
 
 const express = require('express');
 const authRouter = require('./router/auth');
+const db = require('./db/config');
 const app = express();
 
 // app.get('/', (req, res) => {
@@ -9,6 +10,13 @@ const app = express();
 // });
 
 // app.use('*', express.static(__dirname + '/public'));
+
+app.use(express.json());
+
+db.then(() => {
+    console.log('conexión db');
+    
+});
 
 app.use('/', express.static(__dirname + '/public'));
 
