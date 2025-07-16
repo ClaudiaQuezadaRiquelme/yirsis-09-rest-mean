@@ -1,4 +1,5 @@
-const userModel = require('../models/usuario')
+const bcryptjs = require('bcryptjs');
+const userModel = require('../models/usuario');
 
 const loginUser = (req, res) => {
     res.send('Login controller');
@@ -20,10 +21,13 @@ const registerUser = async (req, res) => {
             const newUser = new userModel({
                 email, password, username
             });
+            const salt = bcryptjs.genSaltSync(12);
+            newUser.password = bcryptjs.hashSync(password, salt);
             await newUser.save();
             res.json({
                 ok: true,
-                email, password, username,
+                id: newUser.id,
+                email, username,
                 msg: 'Usuario creado.'
             });
         }
