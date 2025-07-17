@@ -1,5 +1,9 @@
 const bcryptjs = require('bcryptjs');
+const jwt = require('jsonwebtoken');
 const userModel = require('../models/usuario');
+
+const ENVSECRETWORD = process.env.SECRETWORD;
+
 
 const loginUser = (req, res) => {
     res.send('Login controller');
@@ -24,22 +28,29 @@ const registerUser = async (req, res) => {
             const salt = bcryptjs.genSaltSync(12);
             newUser.password = bcryptjs.hashSync(password, salt);
             await newUser.save();
-            res.json({
-                ok: true,
+
+            const payload = {
                 id: newUser.id,
-                email, username,
-                msg: 'Usuario creado.'
-            });
+            }
+            jwt.sign(payload, ENVSECRETWORD, {expiresIn: 3600}, (error, token) => { // Tiempo expiresIn 3600 sólo válido para desarrollo
+                res.json({
+                    ok: true,
+                    id: newUser.id,
+                    username,
+                    token,
+                    msg: 'Usuario creado.'
+                });
+            });            
         }
     } catch (error) {
-        console.log('Error en el registro de usuario.');
+        console.log('Error en el registro de usuario.:',error);
         res.json({
             ok: false,
             msg: 'Error al registrar usuario.'
         });
     }
     console.log({email, password, username} );
-    res.json({ok: true, email, username, password});
+    // res.json({ok: true, email, username, password})
 }
 
 module.exports = {
