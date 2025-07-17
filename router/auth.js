@@ -1,29 +1,25 @@
 const { Router } = require("express");
 const { loginUser, registerUser } = require("../controllers/auth.controller");
+const { check } = require("express-validator");
 
 const authRouter = Router();
 
-// authRouter.get('/login', (req, res) => { 
-//     res.send('auth server');
-// });
-
-// authRouter.post('/login', (req, res) => { // se oculta información en la url
-
-//     // verificar los datos y formato específico
-
-//     // buscar el registro en la base de datos
-
-//     // verificar la contraseña
-
-
-//     res.send('auth server');
-// });
-
-
-authRouter.post('/register', registerUser);
-authRouter.post('/login', loginUser);
-
-// authRouter.get('/login', loginUser);
-
+authRouter.post(
+    '/register', 
+    [
+        check('email', 'El formato es invalido').isEmail(),
+        check('password', 'La contraseña tiene que tener 6 caracteres como mínimo').isLength({min:6}),
+        check('username', 'El nombre de usuario es requerido').not().isEmpty()
+    ], 
+    registerUser
+);
+authRouter.post(
+    '/login',
+    [
+        check('email', 'El formato es invalido').isEmail(),
+        check('password', 'La contraseña tiene que tener 6 caracteres como mínimo').isLength({min:6}),
+    ], 
+    loginUser
+);
 
 module.exports = authRouter;

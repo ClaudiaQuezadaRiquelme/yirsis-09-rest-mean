@@ -1,17 +1,15 @@
 require('dotenv').config();
 
-const MONGODBPASS = process.env.MDBPASS;
-const MONGODBUSER = process.env.MDBUSER;
+const DB_CONECTION = process.env.DB_CONECTION;
 
 const mongoose = require('mongoose');
 
 const dbConexion = async () => {
     try {
-        await mongoose.connect('mongodb+srv://'+MONGODBUSER+':'+MONGODBPASS+'@cluster.djnuaq8.mongodb.net/crud?retryWrites=true&w=majority&appName=Cluster');
+        await mongoose.connect(DB_CONECTION);
         console.log('Conexión DB exitosa');
     } catch (error) {
-        console.log('Error conexión');
-        
+        console.log('Error conexión: '+error);
     }
 }
 

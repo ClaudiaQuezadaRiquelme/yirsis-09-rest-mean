@@ -1,11 +1,21 @@
 const bcryptjs = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const { validationResult } = require("express-validator");
 const userModel = require('../models/usuario');
 
 const ENVSECRETWORD = process.env.SECRETWORD;
 
 const registerUser = async (req, res) => {
     console.log("registerUser: ", req.body);
+
+    const errors = validationResult(req);
+
+    if (!errors.isEmpty()) {
+        return res.status(501).json({
+            ok: false,
+            msg: errors.mapped()
+        });
+    }
     
     const {email, password, username} = req.body; // si recibo más datos dentro del request, con la desestructuración evito guardar datos que no he planificado manejar, así evito problemas de seguridad.
 
@@ -49,7 +59,17 @@ const registerUser = async (req, res) => {
 }
 
 const loginUser = async (req, res) => {
-    // res.send('Login controller');
+    console.log("loginUser: ", req.body);
+
+    const errors = validationResult(req);
+
+    if (!errors.isEmpty()) {
+        return res.status(501).json({
+            ok: false,
+            msg: errors.mapped()
+        });
+    }
+
     const {email, password} = req.body; 
     try {
         let user = await userModel.findOne({email});
