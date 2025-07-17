@@ -1,22 +1,15 @@
 require('dotenv').config();
 
 const express = require('express');
+const cors = require('cors');
+
 const authRouter = require('./router/auth');
 const dbConexion = require('./db/config');
 const app = express();
 
-// app.get('/', (req, res) => {
-//     res.send('Acceso');
-// });
-
-// app.use('*', express.static(__dirname + '/public'));
 
 app.use(express.json());
-
-// db.then(() => {
-//     console.log('conexión db');
-// });
-
+app.use(cors());
 dbConexion();
 
 app.use('/', express.static(__dirname + '/public'));
