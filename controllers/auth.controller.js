@@ -4,11 +4,6 @@ const userModel = require('../models/usuario');
 
 const ENVSECRETWORD = process.env.SECRETWORD;
 
-
-const loginUser = (req, res) => {
-    res.send('Login controller');
-}
-
 const registerUser = async (req, res) => {
     console.log("registerUser: ", req.body);
     
@@ -51,6 +46,48 @@ const registerUser = async (req, res) => {
     }
     console.log({email, password, username} );
     // res.json({ok: true, email, username, password})
+}
+
+const loginUser = async (req, res) => {
+    // res.send('Login controller');
+    const {email, password} = req.body; 
+    try {
+        let user = await userModel.findOne({email});
+
+        if (!user) {
+            return res.status(401).json({
+                ok: true,
+                msg: 'Correo o contraseña inválida.'
+            });
+        } else {
+            const passwordValido = bcryptjs.compareSync(password, user.password);
+            if (!passwordValido) {
+                return res.status(401).json({
+                    ok: true,
+                    msg: 'Correo o contraseña inválida.'
+                });
+            }
+
+            const payload = {
+                id: user.id,
+            }
+            jwt.sign(payload, ENVSECRETWORD, {expiresIn: 3600}, (error, token) => { // Tiempo expiresIn 3600 sólo válido para desarrollo
+                res.json({
+                    ok: true,
+                    id: user.id,
+                    username: user.username,
+                    token,
+                    msg: 'Usuario logueado.'
+                });
+            });            
+        }
+    } catch (error) {
+        console.log('Error en el login de usuario.:',error);
+        res.json({
+            ok: false,
+            msg: 'Error al loguear usuario.'
+        });
+    }
 }
 
 module.exports = {

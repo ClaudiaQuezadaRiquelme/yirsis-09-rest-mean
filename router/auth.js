@@ -21,6 +21,7 @@ const authRouter = Router();
 
 
 authRouter.post('/register', registerUser);
+authRouter.post('/login', loginUser);
 
 // authRouter.get('/login', loginUser);
 
